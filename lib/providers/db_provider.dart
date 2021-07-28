@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:qr_reader/models/scan_models.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -27,7 +28,8 @@ class DBProvider{
 
     return await openDatabase(
         path,
-      version: 1,
+      readOnly: false,
+      version: 2,
       onOpen: (db){},
       onCreate: (Database db, int version)async{
           await db.execute('''
@@ -39,6 +41,44 @@ class DBProvider{
           ''');
       }
     );
+
+  }
+
+  Future<int> nuevoScanRaw(ScanModel nuevoScan) async{
+    final id = nuevoScan.id;
+    final tipo = nuevoScan.tipo;
+    final valor =nuevoScan.valor;
+
+    final db = await database;
+    final res = await db.rawInsert(
+      '''
+      INSERT INTO Scans(id, tipo, valor)
+      VALUES($id, '$tipo', '$valor')
+      '''
+    );
+
+    return res;
+
+  }
+
+  //fforma optima de insertar
+  Future<int> nuevoScan(ScanModel nuevoScan) async{
+
+
+    final db = await database;
+    final respuesta = await db.insert('Scans', nuevoScan.toJson());
+    print('NUMERO EXTRAÑO: $respuesta');
+    return respuesta;//id del ultimo registro insertado
+
+  }
+
+  Future<int> eliminarTodos() async{
+
+
+    final db = await database;
+    final respuesta = await db.delete('Scans');
+    print('NUMERO EXTRAÑO 2: $respuesta');
+    return respuesta;
 
   }
 
