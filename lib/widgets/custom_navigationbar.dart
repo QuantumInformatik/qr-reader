@@ -8,7 +8,7 @@ class CustomNavigationBar extends StatelessWidget {
     final uiProvider = Provider.of<UiProvider>(context);
 
     final currentIndex=uiProvider.selectedMenuOpt;
-
+    print("Devuelve el index actual: $currentIndex");
     return BottomNavigationBar(
       onTap: (int i)=>uiProvider.selectedMenuOpt = i,
       currentIndex:currentIndex,
